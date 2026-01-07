@@ -31,25 +31,25 @@ func ToCreateCharacterParams(d *domain.Character) db.CreateCharacterParams {
 }
 
 func ToCharacterDomain(payload dto.CreateCharacterPayload) *domain.Character {
-	var classes []domain.CharacterClass
+	var classes []*domain.CharacterClass
 	for _, c := range payload.Classes {
-		classes = append(classes, domain.CharacterClass{
+		classes = append(classes, &domain.CharacterClass{
 			ClassID:    c.ClassID,
 			ClassLevel: c.Level,
 		})
 	}
 
-	var traits []domain.Trait
+	var traits []*domain.Trait
 	for _, t := range payload.Traits {
-		traits = append(traits, domain.Trait{
+		traits = append(traits, &domain.Trait{
 			ID:          uuid.New(),
 			Description: t,
 		})
 	}
 
-	var flaws []domain.Flaw
+	var flaws []*domain.Flaw
 	for _, f := range payload.Flaws {
-		flaws = append(flaws, domain.Flaw{
+		flaws = append(flaws, &domain.Flaw{
 			ID:          uuid.New(),
 			Description: f,
 		})
@@ -60,7 +60,7 @@ func ToCharacterDomain(payload dto.CreateCharacterPayload) *domain.Character {
 		Name:         payload.Name,
 		Description:  payload.Description,
 		Level:        payload.Level,
-		Experience:   payload.Experience,
+		Experience:   0,
 		ArmorClass:   payload.ArmorClass,
 		HitPoints:    payload.HitPoints,
 		Strength:     payload.Strength,

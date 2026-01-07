@@ -5,15 +5,21 @@ import (
 	"log/slog"
 
 	"github.com/Netflix/go-env"
+	"github.com/joho/godotenv"
 )
 
 var Env Environment
 
 func SetupConfig() {
+	if err := godotenv.Load(".ENV"); err != nil {
+		slog.Info("Loaded .env file")
+		log.Fatal(err)
+	}
+
 	_, err := env.UnmarshalFromEnviron(&Env)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	slog.Info("Environment loaded")
+	slog.Info("Environment loaded", "env", Env)
 }

@@ -1,0 +1,35 @@
+package handler
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/mapper"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/service"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/web/dto"
+)
+
+type CharacterHandler struct {
+	characterService service.CharacterService
+}
+
+func NewCharacterHandler(characterService service.CharacterService) *CharacterHandler {
+	return &CharacterHandler{
+		characterService: characterService,
+	}
+}
+
+func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
+	var payload dto.CreateCharacterPayload
+	if err := c.Bind(&payload); err != nil {
+		c.Error(err)
+		return
+	}
+
+	if err := h.characterService.CreateCharacter(c.Request.Context(), mapper.ToCharacterDomain(payload)); err != nil {
+		c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, nil)
+}

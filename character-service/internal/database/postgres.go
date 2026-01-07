@@ -10,7 +10,7 @@ import (
 )
 
 func NewPostgresConnection() (*sql.DB, error) {
-	dns := fmt.Sprintf("name=%s user=%s password=%s host=%s port=%s sslmode=disabled",
+	dsn := fmt.Sprintf("dbname=%s user=%s password=%s host=%s port=%s sslmode=disable",
 		config.Env.PostgresDB.Name,
 		config.Env.PostgresDB.User,
 		config.Env.PostgresDB.Password,
@@ -18,9 +18,14 @@ func NewPostgresConnection() (*sql.DB, error) {
 		config.Env.PostgresDB.Port,
 	)
 
-	conn, err := sql.Open("postgres", dns)
+	conn, err := sql.Open("postgres", dsn)
 	if err != nil {
 		slog.Error("Failed to connect to postgres database", "error", err)
+		return nil, err
+	}
+
+	if err := conn.Ping(); err != nil {
+		slog.Error("Failed to ping postgres database", "error", err)
 		return nil, err
 	}
 

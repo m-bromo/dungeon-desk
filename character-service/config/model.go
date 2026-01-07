@@ -13,7 +13,7 @@ type Environment struct {
 }
 
 type PostgresDatabase struct {
-	User     string `env:"DB_PORT,default=admin"`
+	User     string `env:"DB_USER,default=admin"`
 	Password string `env:"DB_PASSWORD,default=password"`
 	Name     string `env:"DB_NAME,default=chardb"`
 	Port     string `env:"DB_PORT,default=5432"`

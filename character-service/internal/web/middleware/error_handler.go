@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	resterrors "github.com/m-bromo/dungeon-desk/character-service/internal/rest_errors"
+	resterrors "github.com/m-bromo/dungeon-desk/character-service/internal/web/rest_errors"
 )
 
 func ErrorhandlerMiddleware(c *gin.Context) {

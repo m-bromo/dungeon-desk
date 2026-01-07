@@ -4,7 +4,6 @@ type CreateCharacterPayload struct {
 	Name         string                        `json:"name" binding:"required"`
 	Description  string                        `json:"description"`
 	Level        int                           `json:"level" binding:"required,min=1"`
-	Experience   int                           `json:"experience" binding:"min=0"`
 	ArmorClass   int                           `json:"armorClass" binding:"required"`
 	HitPoints    int                           `json:"hitPoints" binding:"required"`
 	Strength     int                           `json:"strength" binding:"required"`

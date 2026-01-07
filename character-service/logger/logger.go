@@ -24,7 +24,7 @@ func SetupLog(env string) {
 	default:
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level:     slog.LevelDebug,
-			AddSource: true,
+			AddSource: false,
 		}))
 	}
 

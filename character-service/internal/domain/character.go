@@ -1,6 +1,18 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"errors"
+
+	"github.com/google/uuid"
+)
+
+var (
+	ErrCharacterAtMaxLevel = errors.New("the character has achieved the max level")
+)
+
+const (
+	MaxLevel = 20
+)
 
 type Character struct {
 	ID           uuid.UUID
@@ -16,7 +28,7 @@ type Character struct {
 	Intelligence int
 	Wisdom       int
 	Charisma     int
-	Classes      []CharacterClass
-	Traits       []Trait
-	Flaws        []Flaw
+	Classes      []*CharacterClass
+	Traits       []*Trait
+	Flaws        []*Flaw
 }
