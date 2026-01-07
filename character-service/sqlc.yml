@@ -6,5 +6,5 @@ sql:
     engine: "postgresql"
     gen:
       go:
-        package: "db"
+        package: "sqlc"
         out: "internal/database/sqlc"
