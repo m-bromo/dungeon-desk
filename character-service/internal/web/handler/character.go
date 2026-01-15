@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/mapper"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/service"
-	"github.com/m-bromo/dungeon-desk/character-service/internal/web/dto"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/web/models"
 )
 
 type CharacterHandler struct {
@@ -20,13 +20,18 @@ func NewCharacterHandler(characterService service.CharacterService) *CharacterHa
 }
 
 func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
-	var payload dto.CreateCharacterPayload
+	var payload models.CreateCharacterPayload
 	if err := c.Bind(&payload); err != nil {
 		c.Error(err)
 		return
 	}
 
-	if err := h.characterService.CreateCharacter(c.Request.Context(), mapper.ToCharacterDomain(payload)); err != nil {
+	input := mapper.ToDomainInput(&payload)
+
+	if err := h.characterService.CreateCharacter(
+		c.Request.Context(),
+		input,
+	); err != nil {
 		c.Error(err)
 		return
 	}

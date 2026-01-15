@@ -1,6 +1,10 @@
 package domain
 
+import "github.com/google/uuid"
+
 type Class struct {
-	ID   int
-	Name string
+	ID          uuid.UUID
+	Level       int
+	Name        string
+	Description string
 }

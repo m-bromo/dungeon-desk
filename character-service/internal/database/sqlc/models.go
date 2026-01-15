@@ -6,24 +6,243 @@ package sqlc
 
 import (
 	"database/sql"
+	"database/sql/driver"
+	"fmt"
 
 	"github.com/google/uuid"
 )
 
+type ActionCostType string
+
+const (
+	ActionCostTypeAction      ActionCostType = "action"
+	ActionCostTypeBonusAction ActionCostType = "bonus_action"
+	ActionCostTypeReaction    ActionCostType = "reaction"
+	ActionCostTypeMovement    ActionCostType = "movement"
+	ActionCostTypeNone        ActionCostType = "none"
+)
+
+func (e *ActionCostType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = ActionCostType(s)
+	case string:
+		*e = ActionCostType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for ActionCostType: %T", src)
+	}
+	return nil
+}
+
+type NullActionCostType struct {
+	ActionCostType ActionCostType
+	Valid          bool // Valid is true if ActionCostType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullActionCostType) Scan(value interface{}) error {
+	if value == nil {
+		ns.ActionCostType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.ActionCostType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullActionCostType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.ActionCostType), nil
+}
+
+type Alignment string
+
+const (
+	AlignmentLawfulGood     Alignment = "lawful_good"
+	AlignmentNeutralGood    Alignment = "neutral_good"
+	AlignmentChaoticGood    Alignment = "chaotic_good"
+	AlignmentLawfulNeutral  Alignment = "lawful_neutral"
+	AlignmentTrueNeutral    Alignment = "true_neutral"
+	AlignmentChaoticNeutral Alignment = "chaotic_neutral"
+	AlignmentLawfulEvil     Alignment = "lawful_evil"
+	AlignmentNeutralEvil    Alignment = "neutral_evil"
+	AlignmentChaoticEvil    Alignment = "chaotic_evil"
+)
+
+func (e *Alignment) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Alignment(s)
+	case string:
+		*e = Alignment(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Alignment: %T", src)
+	}
+	return nil
+}
+
+type NullAlignment struct {
+	Alignment Alignment
+	Valid     bool // Valid is true if Alignment is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAlignment) Scan(value interface{}) error {
+	if value == nil {
+		ns.Alignment, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Alignment.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAlignment) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Alignment), nil
+}
+
+type AttackType string
+
+const (
+	AttackTypeMeleeWeapon  AttackType = "melee_weapon"
+	AttackTypeRangedWeapon AttackType = "ranged_weapon"
+	AttackTypeMeleeSpell   AttackType = "melee_spell"
+	AttackTypeRangedSpell  AttackType = "ranged_spell"
+	AttackTypeNone         AttackType = "none"
+)
+
+func (e *AttackType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AttackType(s)
+	case string:
+		*e = AttackType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AttackType: %T", src)
+	}
+	return nil
+}
+
+type NullAttackType struct {
+	AttackType AttackType
+	Valid      bool // Valid is true if AttackType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAttackType) Scan(value interface{}) error {
+	if value == nil {
+		ns.AttackType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AttackType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAttackType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AttackType), nil
+}
+
+type DamageType string
+
+const (
+	DamageTypeBludgeoning DamageType = "bludgeoning"
+	DamageTypePiercing    DamageType = "piercing"
+	DamageTypeSlashing    DamageType = "slashing"
+	DamageTypeAcid        DamageType = "acid"
+	DamageTypeCold        DamageType = "cold"
+	DamageTypeFire        DamageType = "fire"
+	DamageTypeForce       DamageType = "force"
+	DamageTypeLightning   DamageType = "lightning"
+	DamageTypeNecrotic    DamageType = "necrotic"
+	DamageTypePoison      DamageType = "poison"
+	DamageTypePsychic     DamageType = "psychic"
+	DamageTypeRadiant     DamageType = "radiant"
+	DamageTypeThunder     DamageType = "thunder"
+)
+
+func (e *DamageType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = DamageType(s)
+	case string:
+		*e = DamageType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for DamageType: %T", src)
+	}
+	return nil
+}
+
+type NullDamageType struct {
+	DamageType DamageType
+	Valid      bool // Valid is true if DamageType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullDamageType) Scan(value interface{}) error {
+	if value == nil {
+		ns.DamageType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.DamageType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullDamageType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.DamageType), nil
+}
+
+type ActionDefinition struct {
+	ID              int32
+	Name            string
+	Description     sql.NullString
+	CostType        ActionCostType
+	AttackType      AttackType
+	RangeNormal     sql.NullInt32
+	RangeLong       sql.NullInt32
+	DamageFormulaID sql.NullInt32
+}
+
+type Background struct {
+	ID          int32
+	Name        string
+	Description string
+}
+
 type Character struct {
-	ID           uuid.UUID
-	Name         string
-	Description  sql.NullString
-	Level        int32
-	Experience   int32
-	ArmorClass   int32
-	HitPoints    int32
-	Strength     int32
-	Dexterity    int32
-	Constitution int32
-	Intelligence int32
-	Wisdom       int32
-	Charisma     int32
+	ID               uuid.UUID
+	Name             string
+	Description      sql.NullString
+	Alignment        NullAlignment
+	TotalLevel       int32
+	Experience       int32
+	ArmorClass       int32
+	HitPoints        int32
+	CurrentHitPoints int32
+	Speed            sql.NullInt32
+	ProficiencyBonus sql.NullInt32
+	Strength         int32
+	Dexterity        int32
+	Constitution     int32
+	Intelligence     int32
+	Wisdom           int32
+	Charisma         int32
+	Traits           []string
+	Flaws            []string
+	RaceID           sql.NullInt32
+	BackgroundID     sql.NullInt32
 }
 
 type CharacterClass struct {
@@ -32,19 +251,94 @@ type CharacterClass struct {
 	ClassLevel  sql.NullInt32
 }
 
+type CharacterFeat struct {
+	CharacterID uuid.UUID
+	FeatID      int32
+}
+
+type CharacterInventory struct {
+	CharacterID uuid.UUID
+	ItemID      uuid.UUID
+	Quantity    int32
+	IsEquipped  bool
+}
+
+type CharacterSkill struct {
+	CharacterID uuid.UUID
+	SkillID     int32
+}
+
+type CharacterSpell struct {
+	CharacterID uuid.UUID
+	SpellID     uuid.UUID
+	IsPrepared  bool
+}
+
+type CharacterSpellSlot struct {
+	CharacterID uuid.UUID
+	SpellSlotID int32
+}
+
 type Class struct {
-	ID   int32
-	Name string
+	ID          int32
+	Name        string
+	Description string
 }
 
-type Flaw struct {
-	ID          uuid.UUID
-	Description string
-	CharacterID uuid.UUID
+type DamageFormula struct {
+	ID         int32
+	DiceCount  sql.NullInt32
+	DiceValue  sql.NullInt32
+	DamageType NullDamageType
 }
 
-type Trait struct {
-	ID          uuid.UUID
+type Feat struct {
+	ID                 int32
+	Name               sql.NullString
+	Description        sql.NullString
+	ActionDefinitionID sql.NullInt32
+}
+
+type Item struct {
+	ID                 uuid.UUID
+	Name               string
+	Description        sql.NullString
+	Cost               int32
+	Weight             int32
+	ActionDefinitionID sql.NullInt32
+}
+
+type Race struct {
+	ID          int32
+	Name        string
 	Description string
-	CharacterID uuid.UUID
+}
+
+type Skill struct {
+	ID          int32
+	Name        string
+	Description string
+}
+
+type Spell struct {
+	ID                 uuid.UUID
+	Name               sql.NullString
+	School             sql.NullString
+	SpellCost          sql.NullInt32
+	SpellLevel         sql.NullInt32
+	ActionDefinitionID sql.NullInt32
+}
+
+type SpellSlot struct {
+	ID       int32
+	Level    int32
+	Quantity int32
+}
+
+type Subclass struct {
+	ID            int32
+	Name          string
+	Description   string
+	UnlockedLevel int32
+	ClassID       sql.NullInt32
 }

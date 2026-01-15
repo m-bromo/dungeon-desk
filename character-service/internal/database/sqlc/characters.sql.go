@@ -10,34 +10,51 @@ import (
 	"database/sql"
 
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const createCharacter = `-- name: CreateCharacter :one
 INSERT INTO characters (
-    id, name, description, level, experience, 
-    armor_class, hit_points, strength, dexterity, 
-    constitution, intelligence, wisdom, charisma
+    id, 
+    name, 
+    description, 
+    alignment, 
+    total_level, 
+    experience, 
+    armor_class, 
+    hit_points, 
+    current_hit_points, 
+    strength, 
+    dexterity, 
+    constitution, 
+    intelligence, 
+    wisdom, 
+    charisma, 
+    traits, 
+    flaws
 ) VALUES (
-    $1, $2, $3, $4, $5, 
-    $6, $7, $8, $9, 
-    $10, $11, $12, $13
-) RETURNING id, name, description, level, experience, armor_class, hit_points, strength, dexterity, constitution, intelligence, wisdom, charisma
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+) RETURNING id, name, description, alignment, total_level, experience, armor_class, hit_points, current_hit_points, speed, proficiency_bonus, strength, dexterity, constitution, intelligence, wisdom, charisma, traits, flaws, race_id, background_id
 `
 
 type CreateCharacterParams struct {
-	ID           uuid.UUID
-	Name         string
-	Description  sql.NullString
-	Level        int32
-	Experience   int32
-	ArmorClass   int32
-	HitPoints    int32
-	Strength     int32
-	Dexterity    int32
-	Constitution int32
-	Intelligence int32
-	Wisdom       int32
-	Charisma     int32
+	ID               uuid.UUID
+	Name             string
+	Description      sql.NullString
+	Alignment        NullAlignment
+	TotalLevel       int32
+	Experience       int32
+	ArmorClass       int32
+	HitPoints        int32
+	CurrentHitPoints int32
+	Strength         int32
+	Dexterity        int32
+	Constitution     int32
+	Intelligence     int32
+	Wisdom           int32
+	Charisma         int32
+	Traits           []string
+	Flaws            []string
 }
 
 func (q *Queries) CreateCharacter(ctx context.Context, arg CreateCharacterParams) (Character, error) {
@@ -45,32 +62,44 @@ func (q *Queries) CreateCharacter(ctx context.Context, arg CreateCharacterParams
 		arg.ID,
 		arg.Name,
 		arg.Description,
-		arg.Level,
+		arg.Alignment,
+		arg.TotalLevel,
 		arg.Experience,
 		arg.ArmorClass,
 		arg.HitPoints,
+		arg.CurrentHitPoints,
 		arg.Strength,
 		arg.Dexterity,
 		arg.Constitution,
 		arg.Intelligence,
 		arg.Wisdom,
 		arg.Charisma,
+		pq.Array(arg.Traits),
+		pq.Array(arg.Flaws),
 	)
 	var i Character
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Description,
-		&i.Level,
+		&i.Alignment,
+		&i.TotalLevel,
 		&i.Experience,
 		&i.ArmorClass,
 		&i.HitPoints,
+		&i.CurrentHitPoints,
+		&i.Speed,
+		&i.ProficiencyBonus,
 		&i.Strength,
 		&i.Dexterity,
 		&i.Constitution,
 		&i.Intelligence,
 		&i.Wisdom,
 		&i.Charisma,
+		pq.Array(&i.Traits),
+		pq.Array(&i.Flaws),
+		&i.RaceID,
+		&i.BackgroundID,
 	)
 	return i, err
 }
@@ -84,59 +113,8 @@ func (q *Queries) DeleteCharacter(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
-const getCharacter = `-- name: GetCharacter :one
-SELECT 
-    c.id, c.name, c.description, c.level, c.experience, c.armor_class, c.hit_points, c.strength, c.dexterity, c.constitution, c.intelligence, c.wisdom, c.charisma,
-    cl.name AS class_name,
-    cc.class_level
-FROM characters c
-JOIN character_classes cc ON c.id = cc.character_id 
-JOIN classes cl ON cc.class_id = cl.id
-`
-
-type GetCharacterRow struct {
-	ID           uuid.UUID
-	Name         string
-	Description  sql.NullString
-	Level        int32
-	Experience   int32
-	ArmorClass   int32
-	HitPoints    int32
-	Strength     int32
-	Dexterity    int32
-	Constitution int32
-	Intelligence int32
-	Wisdom       int32
-	Charisma     int32
-	ClassName    string
-	ClassLevel   sql.NullInt32
-}
-
-func (q *Queries) GetCharacter(ctx context.Context) (GetCharacterRow, error) {
-	row := q.db.QueryRowContext(ctx, getCharacter)
-	var i GetCharacterRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Level,
-		&i.Experience,
-		&i.ArmorClass,
-		&i.HitPoints,
-		&i.Strength,
-		&i.Dexterity,
-		&i.Constitution,
-		&i.Intelligence,
-		&i.Wisdom,
-		&i.Charisma,
-		&i.ClassName,
-		&i.ClassLevel,
-	)
-	return i, err
-}
-
 const listCharacters = `-- name: ListCharacters :many
-SELECT id, name, description, level, experience, armor_class, hit_points, strength, dexterity, constitution, intelligence, wisdom, charisma FROM characters 
+SELECT id, name, description, alignment, total_level, experience, armor_class, hit_points, current_hit_points, speed, proficiency_bonus, strength, dexterity, constitution, intelligence, wisdom, charisma, traits, flaws, race_id, background_id FROM characters 
 ORDER BY name
 `
 
@@ -153,16 +131,24 @@ func (q *Queries) ListCharacters(ctx context.Context) ([]Character, error) {
 			&i.ID,
 			&i.Name,
 			&i.Description,
-			&i.Level,
+			&i.Alignment,
+			&i.TotalLevel,
 			&i.Experience,
 			&i.ArmorClass,
 			&i.HitPoints,
+			&i.CurrentHitPoints,
+			&i.Speed,
+			&i.ProficiencyBonus,
 			&i.Strength,
 			&i.Dexterity,
 			&i.Constitution,
 			&i.Intelligence,
 			&i.Wisdom,
 			&i.Charisma,
+			pq.Array(&i.Traits),
+			pq.Array(&i.Flaws),
+			&i.RaceID,
+			&i.BackgroundID,
 		); err != nil {
 			return nil, err
 		}
@@ -175,48 +161,4 @@ func (q *Queries) ListCharacters(ctx context.Context) ([]Character, error) {
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateCharacterStats = `-- name: UpdateCharacterStats :exec
-UPDATE characters
-SET 
-    level = $2,
-    experience = $3,
-    hit_points = $4,
-    strength = $5,
-    dexterity = $6,
-    constitution = $7,
-    intelligence = $8,
-    wisdom = $9,
-    charisma = $10
-WHERE id = $1
-`
-
-type UpdateCharacterStatsParams struct {
-	ID           uuid.UUID
-	Level        int32
-	Experience   int32
-	HitPoints    int32
-	Strength     int32
-	Dexterity    int32
-	Constitution int32
-	Intelligence int32
-	Wisdom       int32
-	Charisma     int32
-}
-
-func (q *Queries) UpdateCharacterStats(ctx context.Context, arg UpdateCharacterStatsParams) error {
-	_, err := q.db.ExecContext(ctx, updateCharacterStats,
-		arg.ID,
-		arg.Level,
-		arg.Experience,
-		arg.HitPoints,
-		arg.Strength,
-		arg.Dexterity,
-		arg.Constitution,
-		arg.Intelligence,
-		arg.Wisdom,
-		arg.Charisma,
-	)
-	return err
 }

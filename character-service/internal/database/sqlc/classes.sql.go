@@ -68,7 +68,7 @@ func (q *Queries) GetClassesByCharacterID(ctx context.Context, characterID uuid.
 }
 
 const listAllClasses = `-- name: ListAllClasses :many
-SELECT id, name FROM classes ORDER BY name
+SELECT id, name, description FROM classes ORDER BY name
 `
 
 func (q *Queries) ListAllClasses(ctx context.Context) ([]Class, error) {
@@ -80,7 +80,7 @@ func (q *Queries) ListAllClasses(ctx context.Context) ([]Class, error) {
 	var items []Class
 	for rows.Next() {
 		var i Class
-		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+		if err := rows.Scan(&i.ID, &i.Name, &i.Description); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
