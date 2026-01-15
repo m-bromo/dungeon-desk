@@ -9,7 +9,7 @@ import (
 )
 
 type CharacterService interface {
-	CreateCharacter(ctx context.Context, input *domain.CharacterInput) error
+	CreateCharacter(ctx context.Context, input *domain.CreateCharacterInput) error
 }
 
 type characterService struct {
@@ -22,7 +22,7 @@ func NewCharacterService(repository repository.CharacterRepository) CharacterSer
 	}
 }
 
-func (s *characterService) CreateCharacter(ctx context.Context, input *domain.CharacterInput) error {
+func (s *characterService) CreateCharacter(ctx context.Context, input *domain.CreateCharacterInput) error {
 	character := domain.NewCharacter(input)
 
 	if err := s.repository.CreateCharacter(ctx, character); err != nil {

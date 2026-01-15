@@ -39,7 +39,7 @@ type Character struct {
 	Classes           []*Class
 }
 
-type CharacterInput struct {
+type CreateCharacterInput struct {
 	Name         string
 	Description  string
 	Alignment    Alignment
@@ -54,7 +54,7 @@ type CharacterInput struct {
 	flaws        []string
 }
 
-func NewCharacter(input *CharacterInput) *Character {
+func NewCharacter(input *CreateCharacterInput) *Character {
 	baseArmorClass := 10 + (input.Dexterity - 10/2)
 	baseHitPoints := 10 + (input.Constitution - 10/2)
 
