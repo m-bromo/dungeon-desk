@@ -1,4 +1,4 @@
-package repository
+package postgres
 
 import (
 	"context"
@@ -6,25 +6,21 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/database/sqlc"
-	"github.com/m-bromo/dungeon-desk/character-service/internal/domain"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/domain/entities"
+	"github.com/m-bromo/dungeon-desk/character-service/internal/domain/repository"
 )
-
-type CharacterRepository interface {
-	CreateCharacter(ctx context.Context, character *domain.Character) error
-	AddClassToCharacter(ctx context.Context, characterID uuid.UUID, classID int) error
-}
 
 type characterRepository struct {
 	querier sqlc.Querier
 }
 
-func NewCharacterRepository(querier sqlc.Querier) CharacterRepository {
+func NewCharacterRepository(querier sqlc.Querier) repository.CharacterRepository {
 	return &characterRepository{
 		querier: querier,
 	}
 }
 
-func (r *characterRepository) CreateCharacter(ctx context.Context, character *domain.Character) error {
+func (r *characterRepository) CreateCharacter(ctx context.Context, character *entities.Character) error {
 	_, err := r.querier.CreateCharacter(ctx, sqlc.CreateCharacterParams{
 		ID:   character.ID,
 		Name: character.Name,
@@ -64,4 +60,32 @@ func (r *characterRepository) AddClassToCharacter(ctx context.Context, character
 	})
 
 	return err
+}
+
+func (r characterRepository) GetCharacter(ctx context.Context, characterID uuid.UUID) (*entities.Character, error) {
+	character, err := r.querier.GetCharacter(ctx, characterID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &entities.Character{
+		Name:              character.Name,
+		Description:       character.Description.String,
+		Alignment:         entities.Alignment(character.Alignment.Alignment),
+		TotalLevel:        int(character.TotalLevel),
+		Experience:        int(character.Experience),
+		ArmorClass:        int(character.ArmorClass),
+		HitPoints:         int(character.HitPoints),
+		CurrentHitPoints:  int(character.CurrentHitPoints),
+		Speed:             int(character.Speed.Int32),
+		ProeficiencyBonus: int(character.ProficiencyBonus.Int32),
+		Strength:          int(character.Strength),
+		Dexterity:         int(character.Dexterity),
+		Constitution:      int(character.Constitution),
+		Wisdom:            int(character.Wisdom),
+		Intelligence:      int(character.Intelligence),
+		Charisma:          int(character.Charisma),
+		Traits:            character.Traits,
+		Flaws:             character.Flaws,
+	}, nil
 }

@@ -113,6 +113,40 @@ func (q *Queries) DeleteCharacter(ctx context.Context, id uuid.UUID) error {
 	return err
 }
 
+const getCharacter = `-- name: GetCharacter :one
+SELECT id, name, description, alignment, total_level, experience, armor_class, hit_points, current_hit_points, speed, proficiency_bonus, strength, dexterity, constitution, intelligence, wisdom, charisma, traits, flaws, race_id, background_id FROM characters
+WHERE id = $1
+`
+
+func (q *Queries) GetCharacter(ctx context.Context, id uuid.UUID) (Character, error) {
+	row := q.db.QueryRowContext(ctx, getCharacter, id)
+	var i Character
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Description,
+		&i.Alignment,
+		&i.TotalLevel,
+		&i.Experience,
+		&i.ArmorClass,
+		&i.HitPoints,
+		&i.CurrentHitPoints,
+		&i.Speed,
+		&i.ProficiencyBonus,
+		&i.Strength,
+		&i.Dexterity,
+		&i.Constitution,
+		&i.Intelligence,
+		&i.Wisdom,
+		&i.Charisma,
+		pq.Array(&i.Traits),
+		pq.Array(&i.Flaws),
+		&i.RaceID,
+		&i.BackgroundID,
+	)
+	return i, err
+}
+
 const listCharacters = `-- name: ListCharacters :many
 SELECT id, name, description, alignment, total_level, experience, armor_class, hit_points, current_hit_points, speed, proficiency_bonus, strength, dexterity, constitution, intelligence, wisdom, charisma, traits, flaws, race_id, background_id FROM characters 
 ORDER BY name

@@ -1,4 +1,4 @@
-package domain
+package entities
 
 type Feat struct {
 	ID               int

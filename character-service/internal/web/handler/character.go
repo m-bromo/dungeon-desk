@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/mapper"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/service"
 	"github.com/m-bromo/dungeon-desk/character-service/internal/web/models"
@@ -37,4 +38,19 @@ func (h *CharacterHandler) CreateCharacter(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, nil)
+}
+
+func (h *CharacterHandler) GetCharacter(c *gin.Context) {
+	characterID, _ := c.Params.Get("id")
+
+	character, err := h.characterService.GetCharacter(c.Request.Context(), uuid.MustParse(characterID))
+	if err != nil {
+		c.Error(err)
+		return
+	}
+
+	response := mapper.ToCharacterResponse(character)
+
+	c.JSON(http.StatusOK, response)
+
 }

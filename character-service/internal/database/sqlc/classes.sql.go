@@ -31,28 +31,28 @@ func (q *Queries) AddClassToCharacter(ctx context.Context, arg AddClassToCharact
 	return i, err
 }
 
-const getClassesByCharacterID = `-- name: GetClassesByCharacterID :many
+const getCharacterClasses = `-- name: GetCharacterClasses :many
 SELECT c.id, c.name, cc.class_level
 FROM classes c
 JOIN character_classes cc ON c.id = cc.class_id
 WHERE cc.character_id = $1
 `
 
-type GetClassesByCharacterIDRow struct {
+type GetCharacterClassesRow struct {
 	ID         int32
 	Name       string
 	ClassLevel sql.NullInt32
 }
 
-func (q *Queries) GetClassesByCharacterID(ctx context.Context, characterID uuid.UUID) ([]GetClassesByCharacterIDRow, error) {
-	rows, err := q.db.QueryContext(ctx, getClassesByCharacterID, characterID)
+func (q *Queries) GetCharacterClasses(ctx context.Context, characterID uuid.UUID) ([]GetCharacterClassesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getCharacterClasses, characterID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetClassesByCharacterIDRow
+	var items []GetCharacterClassesRow
 	for rows.Next() {
-		var i GetClassesByCharacterIDRow
+		var i GetCharacterClassesRow
 		if err := rows.Scan(&i.ID, &i.Name, &i.ClassLevel); err != nil {
 			return nil, err
 		}

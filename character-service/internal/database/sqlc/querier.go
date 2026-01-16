@@ -14,7 +14,8 @@ type Querier interface {
 	AddClassToCharacter(ctx context.Context, arg AddClassToCharacterParams) (CharacterClass, error)
 	CreateCharacter(ctx context.Context, arg CreateCharacterParams) (Character, error)
 	DeleteCharacter(ctx context.Context, id uuid.UUID) error
-	GetClassesByCharacterID(ctx context.Context, characterID uuid.UUID) ([]GetClassesByCharacterIDRow, error)
+	GetCharacter(ctx context.Context, id uuid.UUID) (Character, error)
+	GetCharacterClasses(ctx context.Context, characterID uuid.UUID) ([]GetCharacterClassesRow, error)
 	ListAllClasses(ctx context.Context) ([]Class, error)
 	ListCharacters(ctx context.Context) ([]Character, error)
 }

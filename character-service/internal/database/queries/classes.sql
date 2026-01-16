@@ -6,7 +6,7 @@ INSERT INTO character_classes (character_id, class_id, class_level)
 VALUES ($1, $2, $3)
 RETURNING *;
 
--- name: GetClassesByCharacterID :many
+-- name: GetCharacterClasses :many
 SELECT c.id, c.name, cc.class_level
 FROM classes c
 JOIN character_classes cc ON c.id = cc.class_id

@@ -12,4 +12,5 @@ func SetupRoutes(router *gin.Engine, c *dig.Container) {
 	h := injector.Resolve[*handler.CharacterHandler](c)
 
 	router.POST("/character/create", h.CreateCharacter, middleware.ErrorhandlerMiddleware)
+	router.GET("/character/:id", h.GetCharacter, middleware.ErrorhandlerMiddleware)
 }

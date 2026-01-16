@@ -1,6 +1,6 @@
-package domain
+package entities
 
-type Race struct {
+type Background struct {
 	ID          int
 	Name        string
 	Description string

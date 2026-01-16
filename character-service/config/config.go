@@ -11,7 +11,7 @@ import (
 var Env Environment
 
 func SetupConfig() {
-	if err := godotenv.Load(".ENV"); err != nil {
+	if err := godotenv.Load(".env"); err != nil {
 		slog.Info("Loaded .env file")
 		log.Fatal(err)
 	}

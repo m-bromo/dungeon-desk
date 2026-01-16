@@ -1,4 +1,4 @@
-package domain
+package entities
 
 import (
 	"errors"
@@ -52,6 +52,27 @@ type CreateCharacterInput struct {
 	Charisma     int
 	traits       []string
 	flaws        []string
+}
+
+type GetCharacterOutput struct {
+	Name              string
+	Description       string
+	Alignment         Alignment
+	Classes           []*Class
+	TotalLevel        int
+	Experience        int
+	ProeficiencyBonus int
+	ArmorClass        int
+	HitPoints         int
+	CurrentHitPoints  int
+	Strength          int
+	Dexterity         int
+	Constitution      int
+	Intelligence      int
+	Wisdom            int
+	Charisma          int
+	Traits            []string
+	Flaws             []string
 }
 
 func NewCharacter(input *CreateCharacterInput) *Character {
